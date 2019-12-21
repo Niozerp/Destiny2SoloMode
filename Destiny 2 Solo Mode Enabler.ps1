@@ -6,7 +6,7 @@
 .PURPOSE
     Disables the ports used by match making on the local client to prevent random users from joining you
 .VERSION
-    1.5
+    1.7.4
 .FAQ
     Recommend to: Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     Recommend to: Run Powershell ISE as Admin, and launch the script from there
@@ -30,6 +30,7 @@ Function Get-ModeStatus{
         }  
 }
 
+#returns the color used on the Status Label based on the boolean provided
 Function Color-Picker([boolean]$status){
     if($status){
         RETURN "Green"
@@ -38,8 +39,10 @@ Function Color-Picker([boolean]$status){
     }
 }
 
-$StatusHolder = Get-ModeStatus
+#establishes the current status. Holding the status in a variable greatly decreses load and visual update times
+$global:StatusHolder = Get-ModeStatus
 
+#GUI established using Windows Forms. .NET method of making the UI
 $SoloD2                          = New-Object system.Windows.Forms.Form
 $SoloD2.ClientSize               = '451,232'
 $SoloD2.text                     = "Form"
@@ -51,11 +54,11 @@ $ModeStatus_Label.location               = New-Object System.Drawing.Point(120,4
 $ModeStatus_Label.AutoSize               = $true
 
 $ModeStatusBig_Label                     = New-Object System.Windows.Forms.Label
-$ModeStatusBig_Label.Text                   = "$StatusHolder"
+$ModeStatusBig_Label.Text                   = "$global:StatusHolder"
 $ModeStatusBig_Label.Location            = New-Object System.Drawing.Point(230,30)
 $ModeStatusBig_Label.AutoSize            = $true
 $ModeStatusBig_Label.Font                = "Comic Sans,15"
-$ModeStatusBig_Label.ForeColor           = Color-Picker -status $StatusHolder
+$ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
 
 $SoloMode_Button                        = New-Object system.Windows.Forms.Button
 $SoloMode_Button.BackColor              = "#e709f3"
@@ -73,30 +76,110 @@ $RegularMode_Button.location            = New-Object System.Drawing.Point(222,87
 $RegularMode_Button.Font                = 'Microsoft Sans Serif,14'
 $RegularMode_Button.ForeColor           = "#7ed321"
 
+#add all the objects to the control
 $SoloD2.controls.AddRange(@($SoloMode_Button,$RegularMode_Button,$ModeStatus_Label,$ModeStatusBig_Label))
 
+#clicking the solo mode button creates the four firewall rules. checks to see if Solo Mode is currently enabled. Stops immediately if a firewall rule cannot be created
 $SoloMode_Button.Add_Click({
-    New-NetFirewallRule -DisplayName "Destiny2-Solo-1" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block
-    New-NetFirewallRule -DisplayName "Destiny2-Solo-2" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block
-    New-NetFirewallRule -DisplayName "Destiny2-Solo-3" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block
-    New-NetFirewallRule -DisplayName "Destiny2-Solo-4" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block
 
-    $StatusHolder = Get-ModeStatus
-    $ModeStatusBig_Label.Text                   = "$StatusHolder"
-    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $StatusHolder
+
+    #updates the status text and color
+    $global:StatusHolder = Get-ModeStatus
+    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
+    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
+
+
+
+  if($global:StatusHolder -eq $false){
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-1" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+        }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-2" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-2",0,"OK",4096)
+        }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-3" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+        }      
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-4" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+        }
+    }else{
+        #popup notification with specific error dialog
+        $wshell = New-Object -ComObject Wscript.Shell
+        $wshell.Popup("Solo Mode Is Already Enabled",0,"OK",4096)
+    }
+
+    #updates the status text and color
+    $global:StatusHolder = Get-ModeStatus
+    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
+    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
 })
 
+#removes the four firewall rules. checks to see if Solo mode is current disabled. Stops immediately if a firewall rule cannot be deleted
 $RegularMode_Button.Add_Click({
-    Remove-NetFirewallRule -DisplayName "Destiny2-Solo-1" 
-    Remove-NetFirewallRule -DisplayName "Destiny2-Solo-2" 
-    Remove-NetFirewallRule -DisplayName "Destiny2-Solo-3" 
-    Remove-NetFirewallRule -DisplayName "Destiny2-Solo-4"
 
-    $StatusHolder = Get-ModeStatus
-    $ModeStatusBig_Label.Text                   = "$StatusHolder"
-    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $StatusHolder
+    #updates the status text and color
+    $global:StatusHolder = Get-ModeStatus
+    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
+    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
+
+
+
+    if($global:StatusHolder -eq $true){
+
+      try{  Remove-NetFirewallRule -DisplayName "Destiny2-Solo-1" -ErrorAction stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Delete FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+        }
+     try{   Remove-NetFirewallRule -DisplayName "Destiny2-Solo-2" -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Delete FireWall Rule: Destiny2-Solo-2",0,"OK",4096)
+        }
+
+     try{   Remove-NetFirewallRule -DisplayName "Destiny2-Solo-3" -ErrorAction stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Delete FireWall Rule: Destiny2-Solo-3",0,"OK",4096)
+        }
+
+     try{   Remove-NetFirewallRule -DisplayName "Destiny2-Solo-4" -ErrorAction Stop }
+        catch{
+                    #popup notification with specific error dialog
+                    $wshell = New-Object -ComObject Wscript.Shell
+                    $wshell.Popup("Failed to Delete FireWall Rule: Destiny2-Solo-4",0,"OK",4096)
+        }
+
+
+
+    }else{
+        #popup notification with specific error dialog
+        $wshell = New-Object -ComObject Wscript.Shell
+        $wshell.Popup("Solo Mode Is Already Disabled",0,"OK",4096)
+    }
+
+    #updates the status text and color
+    $global:StatusHolder = Get-ModeStatus
+    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
+    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
 
 })
 
-
+#displays the window, kicking off the program launch
 [void]$SoloD2.ShowDialog()
