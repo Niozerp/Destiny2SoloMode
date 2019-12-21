@@ -11,7 +11,7 @@
     Recommend to: Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     Recommend to: Run Powershell ISE as Admin, and launch the script from there
 .WARNING
-    Error handling has not been implemented. This script assumes that your admin account can make the changes below to the Windows FireWall
+    This file modifies your Destiny 2 experience outside of what may be considered the normal permaters of game play. Use at your own risk.
 #>
 
 Add-Type -AssemblyName System.Windows.Forms
