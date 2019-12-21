@@ -1,4 +1,4 @@
-﻿<# This form was created using POSHGUI.com  a free online gui designer for PowerShell
+﻿<#
 .NAME
     Destiny 2 Solo Mode Enabler
 .AUTHOR
