@@ -6,7 +6,7 @@
 .PURPOSE
     Disables the ports used by match making on the local client to prevent random users from joining you
 .VERSION
-    1.7.4
+    1.8
 .FAQ
     Recommend to: Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     Recommend to: Run Powershell ISE as Admin, and launch the script from there
@@ -82,14 +82,6 @@ $SoloD2.controls.AddRange(@($SoloMode_Button,$RegularMode_Button,$ModeStatus_Lab
 #clicking the solo mode button creates the four firewall rules. checks to see if Solo Mode is currently enabled. Stops immediately if a firewall rule cannot be created
 $SoloMode_Button.Add_Click({
 
-
-    #updates the status text and color
-    $global:StatusHolder = Get-ModeStatus
-    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
-    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
-
-
-
   if($global:StatusHolder -eq $false){
       try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-1" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block -ErrorAction Stop }
         catch{
@@ -129,13 +121,6 @@ $SoloMode_Button.Add_Click({
 
 #removes the four firewall rules. checks to see if Solo mode is current disabled. Stops immediately if a firewall rule cannot be deleted
 $RegularMode_Button.Add_Click({
-
-    #updates the status text and color
-    $global:StatusHolder = Get-ModeStatus
-    $ModeStatusBig_Label.Text                   = "$global:StatusHolder"
-    $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
-
-
 
     if($global:StatusHolder -eq $true){
 
@@ -180,6 +165,8 @@ $RegularMode_Button.Add_Click({
     $ModeStatusBig_Label.ForeColor           = Color-Picker -status $global:StatusHolder
 
 })
+
+
 
 #displays the window, kicking off the program launch
 [void]$SoloD2.ShowDialog()
