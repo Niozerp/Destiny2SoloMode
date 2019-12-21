@@ -7,6 +7,11 @@
     Disables the ports used by match making on the local client to prevent random users from joining you
 .VERSION
     1.5
+.FAQ
+    Recommend to: Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+    Recommend to: Run Powershell ISE as Admin, and launch the script from there
+.WARNING
+    Error handling has not been implemented. This script assumes that your admin account can make the changes below to the Windows FireWall
 #>
 
 Add-Type -AssemblyName System.Windows.Forms
