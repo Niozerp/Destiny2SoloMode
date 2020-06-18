@@ -83,29 +83,29 @@ $SoloD2.controls.AddRange(@($SoloMode_Button,$RegularMode_Button,$ModeStatus_Lab
 $SoloMode_Button.Add_Click({
 
   if($global:StatusHolder -eq $false){
-      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-1" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block -ErrorAction Stop }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-1" -Direction Outbound -RemotePort 27000-27200,3097 -Protocol TCP -Action Block -ErrorAction Stop }
         catch{
                     #popup notification with specific error dialog
                     $wshell = New-Object -ComObject Wscript.Shell
                     $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
         }
-      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-2" -Direction Outbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block -ErrorAction Stop }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-2" -Direction Outbound -RemotePort 27000-27200,3097 -Protocol UDP -Action Block -ErrorAction Stop }
         catch{
                     #popup notification with specific error dialog
                     $wshell = New-Object -ComObject Wscript.Shell
                     $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-2",0,"OK",4096)
         }
-      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-3" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol TCP -Action Block -ErrorAction Stop }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-3" -Direction Inbound -RemotePort 27000-27200,3097 -Protocol TCP -Action Block -ErrorAction Stop }
         catch{
                     #popup notification with specific error dialog
                     $wshell = New-Object -ComObject Wscript.Shell
-                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-3",0,"OK",4096)
         }      
-      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-4" -Direction Inbound -LocalPort 1935,3097,3478-3480 -Protocol UDP -Action Block -ErrorAction Stop }
+      try{  New-NetFirewallRule -DisplayName "Destiny2-Solo-4" -Direction Inbound -RemotePort 27000-27200,3097 -Protocol UDP -Action Block -ErrorAction Stop }
         catch{
                     #popup notification with specific error dialog
                     $wshell = New-Object -ComObject Wscript.Shell
-                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-1",0,"OK",4096)
+                    $wshell.Popup("Failed to Create FireWall Rule: Destiny2-Solo-4",0,"OK",4096)
         }
     }else{
         #popup notification with specific error dialog
